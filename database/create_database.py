@@ -1,0 +1,34 @@
+import sqlite3
+
+connection = sqlite3.connect("database/prl_furniture.db")
+
+cursor = connection.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS furniture (
+
+    id INTEGER PRIMARY KEY,
+
+    model TEXT NOT NULL,
+    common_name TEXT,
+    designer TEXT,
+    year TEXT,
+    type TEXT,
+    manufacturer TEXT,
+
+    characteristics TEXT,
+    construction TEXT,
+
+    confused_with TEXT,
+    family TEXT,
+
+    sources TEXT,
+
+    confidence REAL
+)
+""")
+
+connection.commit()
+connection.close()
+
+print("Database created successfully!")
