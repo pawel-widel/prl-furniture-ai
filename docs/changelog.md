@@ -22,6 +22,16 @@
 ## 2026-06-29
 
 ### Added
+- Initialized Git repository
+- Created GitHub repository
+- Added project documentation
+- Implemented SQLite knowledge base
+- Added Prompt Builder service
+- Prepared OpenAI service structure
+
+### Changed
+- Standardized project folder structure
+### Added
 - Installed OpenAI SDK
 - Installed python-dotenv
 - Added environment variable support
