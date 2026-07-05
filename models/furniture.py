@@ -16,3 +16,4 @@ class Furniture:
     model_family: str
     sources: str
     confidence: float
+    search_features: str

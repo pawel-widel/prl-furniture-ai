@@ -1,11 +1,12 @@
 import sqlite3
 
 connection = sqlite3.connect("database/prl_furniture.db")
-
 cursor = connection.cursor()
 
+cursor.execute("DROP TABLE IF EXISTS furniture")
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS furniture (
+CREATE TABLE furniture (
 
     id INTEGER PRIMARY KEY,
 
@@ -24,7 +25,9 @@ CREATE TABLE IF NOT EXISTS furniture (
 
     sources TEXT,
 
-    confidence REAL
+    confidence REAL,
+
+    search_features TEXT
 )
 """)
 

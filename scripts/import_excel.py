@@ -1,21 +1,43 @@
 from openpyxl import load_workbook
 import sqlite3
 
-# Otwórz bazę danych
-conn = sqlite3.connect("database/prl_furniture.db")
-cursor = conn.cursor()
 
-# Otwórz Excel
-workbook = load_workbook("data/furniture.xlsx")
+# Connect to SQLite database
+connection = sqlite3.connect("database/prl_furniture.db")
+cursor = connection.cursor()
+
+# Load Excel workbook
+workbook = load_workbook(
+    "data/furniture.xlsx",
+    data_only=True,
+)
 sheet = workbook["Katalog"]
+
+# Clear existing data
 cursor.execute("DELETE FROM furniture")
 
-# Pomiń pierwszy wiersz (nagłówki)
+# Import rows
 for row in sheet.iter_rows(min_row=2, values_only=True):
 
-    _, model, common_name, designer, year, type_, manufacturer, characteristics, construction, confused_with, family, sources, confidence = row
+    (
+        _,
+        model,
+        common_name,
+        designer,
+        production_years,
+        category,
+        manufacturer,
+        visual_features,
+        construction_features,
+        similar_models,
+        model_family,
+        sources,
+        confidence,
+        search_features,
+    ) = row
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO furniture (
             model,
             common_name,
@@ -28,43 +50,29 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
             confused_with,
             family,
             sources,
-            confidence
+            confidence,
+            search_features
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        model,
-        common_name,
-        designer,
-        year,
-        type_,
-        manufacturer,
-        characteristics,
-        construction,
-        confused_with,
-        family,
-        sources,
-        confidence
-    ))
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            model,
+            common_name,
+            designer,
+            production_years,
+            category,
+            manufacturer,
+            visual_features,
+            construction_features,
+            similar_models,
+            model_family,
+            sources,
+            confidence,
+            search_features,
+        ),
+    )
 
-conn.commit()
-conn.close()
+connection.commit()
+connection.close()
 
-print("Furniture imported successfully!")
-
-...
-
-# tutaj Twój obecny kod importu
-
-print("\n===== HEADERS =====")
-
-headers = [cell.value for cell in sheet[1]]
-
-for i, header in enumerate(headers):
-    print(i, header)
-
-print("\n===== FIRST ROW =====")
-
-first = next(sheet.iter_rows(min_row=2, values_only=True))
-
-for i, value in enumerate(first):
-    print(i, value)
+print("Furniture imported successfully.")
