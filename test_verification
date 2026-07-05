@@ -1,0 +1,19 @@
+from pathlib import Path
+
+import database.database as db
+
+from services.verification_service import verify_candidate
+
+
+IMAGE = Path("test_photo.jpg")
+
+furniture = db.get_all_furniture()[0]
+
+with open(IMAGE, "rb") as uploaded_file:
+
+    result = verify_candidate(
+        uploaded_file,
+        furniture,
+    )
+
+print(result)

@@ -1,48 +1,146 @@
 from models.furniture import Furniture
 
 
-def build_keywords(features: dict) -> list[str]:
-    """
-    Converts Vision JSON into a simple list of keywords
-    used to search the knowledge base.
-    """
+FEATURE_TRANSLATIONS = {
 
-    keywords = []
+    "rounded_shell": [
+        "muszel",
+        "kubeł",
+        "skorup",
+        "zaokrąglone oparcie",
+        "jednolita tapicerowana bryła",
+    ],
 
-    if features.get("category") == "armchair":
-        keywords.append("fotel")
+    "integrated_armrests": [
+        "muszel",
+        "kubeł",
+        "zintegrowane podłokietniki",
+    ],
 
-    if features.get("category") == "chair":
-        keywords.append("krzesło")
+    "flat_armrests": [
+        "płaskie drewniane podłokietniki",
+        "płaskie podłokietniki",
+    ],
 
-    if features.get("has_armrests"):
-        keywords.append("podłokietniki")
+    "curved_armrests": [
+        "gięte drewniane podłokietniki",
+        "gięte podłokietniki",
+    ],
 
-    if features.get("wooden_frame"):
-        keywords.append("drewn")
+    "button_tufting": [
+        "guziki",
+        "pikowanie",
+    ],
 
-    if features.get("seat_type") == "upholstered":
-        keywords.append("tapicer")
+    "angled_backrest": [
+        "pochylone oparcie",
+        "lekko odchylone oparcie",
+    ],
 
-    if features.get("backrest_type") == "upholstered":
-        keywords.append("oparcie")
+    "angled_legs": [
+        "skośnie rozstawione nogi",
+        "zwężające się ku dołowi nogi",
+        "smukłe metalowe nogi",
+        "smukłe nogi",
+    ],
 
-    return keywords
+    "exposed_wood_frame": [
+        "odsłonięta drewniana konstrukcja",
+        "widoczne elementy drewniane",
+        "drewniana rama",
+        "otwarta konstrukcja",
+        "drewniany stelaż",
+    ],
+
+    "open_frame": [
+        "otwarta konstrukcja",
+        "duży prześwit",
+    ],
+}
 
 
 def calculate_score(
-    keywords: list[str],
+    features: dict,
     furniture: Furniture,
 ) -> int:
 
-    score = 0
-
     text = furniture.search_features.lower()
 
-    for keyword in keywords:
+    score = 0
 
-        if keyword.lower() in text:
-            score += 1
+    # ---------- CATEGORY ----------
+
+    if features.get("category") == "armchair":
+        if "fotel" in text:
+            score += 5
+
+    if features.get("category") == "chair":
+        if "krzesło" in text:
+            score += 5
+
+    # ---------- ARMRESTS ----------
+
+    if features.get("has_armrests"):
+        if "podłokiet" in text:
+            score += 3
+
+    # ---------- WOOD ----------
+
+    if features.get("wooden_frame"):
+
+        if "drewn" in text or "buk" in text:
+            score += 4
+
+    else:
+
+        if "metal" in text or "stal" in text:
+            score += 4
+
+        if "drewn" in text:
+            score -= 2
+
+    # ---------- SEAT ----------
+
+    if features.get("seat_type") == "upholstered":
+
+        if "tapicer" in text:
+            score += 2
+
+    # ---------- BACKREST ----------
+
+    if features.get("backrest_type") == "upholstered":
+
+        if "oparcie" in text:
+            score += 2
+
+    # ---------- CONSTRUCTION ----------
+
+    construction = features.get("construction")
+
+    if construction in FEATURE_TRANSLATIONS:
+
+        for keyword in FEATURE_TRANSLATIONS[construction]:
+
+            if keyword.lower() in text:
+                score += 4
+
+    # ---------- EXTRA FEATURES ----------
+
+    extra = features.get("additional_features", "")
+
+    if isinstance(extra, str):
+
+        for tag in extra.split(","):
+
+            tag = tag.strip()
+
+            if tag not in FEATURE_TRANSLATIONS:
+                continue
+
+            for keyword in FEATURE_TRANSLATIONS[tag]:
+
+                if keyword.lower() in text:
+                    score += 4
 
     return score
 
@@ -53,14 +151,12 @@ def find_candidates(
     top_k: int = 5,
 ):
 
-    keywords = build_keywords(features)
-
     results = []
 
     for furniture in furniture_list:
 
         score = calculate_score(
-            keywords,
+            features,
             furniture,
         )
 

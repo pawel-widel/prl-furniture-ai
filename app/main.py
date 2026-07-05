@@ -16,8 +16,6 @@ st.title("PRL Furniture Recognition")
 
 st.write("Welcome to my hobby project!")
 
-st.write("This application will help identify Polish PRL furniture using AI.")
-
 uploaded_file = st.file_uploader(
     "Upload a furniture photo",
     type=["jpg", "jpeg", "png"],
@@ -33,8 +31,21 @@ if uploaded_file is not None:
 
     if st.button("🔍 Identify furniture"):
 
-        result = identify(uploaded_file)
+        with st.spinner("Analyzing image..."):
 
-        st.subheader("Identification result")
+            result = identify(uploaded_file)
 
-        st.write(result)
+        st.subheader("Vision Features")
+
+        st.json(result["features"])
+
+        st.subheader("Top Candidates")
+
+        for index, candidate in enumerate(result["candidates"], start=1):
+
+            furniture = candidate["furniture"]
+
+            st.write(
+                f"**{index}. {furniture.model}** "
+                f"(score: {candidate['score']})"
+            )

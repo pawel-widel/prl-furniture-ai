@@ -1,18 +1,23 @@
 import database.database as db
 
-from services.prompt_builder import build_prompt
-from services.ai_service import analyze_image
+from services.search_service import find_candidates
+from services.vision_service import extract_features
 
 
 def identify(uploaded_file):
 
+    # Stage 1
+    features = extract_features(uploaded_file)
+
+    # Stage 2
     furniture = db.get_all_furniture()
 
-    prompt = build_prompt(furniture)
-
-    result = analyze_image(
-        uploaded_file,
-        prompt,
+    candidates = find_candidates(
+        features,
+        furniture,
     )
 
-    return result
+    return {
+        "features": features,
+        "candidates": candidates,
+    }
