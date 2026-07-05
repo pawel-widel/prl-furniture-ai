@@ -4,14 +4,82 @@ from models.furniture import Furniture
 def build_prompt(furniture_list: list[Furniture]) -> str:
 
     prompt = """
-You are an expert in Polish PRL furniture.
+You are performing a visual verification task.
 
-Your task is to identify furniture ONLY from the knowledge base below.
+This is NOT an identification task.
 
-If nothing matches, answer:
-UNKNOWN
+Ignore your own knowledge about furniture, designers, manufacturers,
+countries of origin and historical styles.
 
-Knowledge base:
+You MUST use ONLY the images provided in this request.
+
+----------------------------------------
+
+Image #1
+
+This is the QUERY image uploaded by the user.
+
+----------------------------------------
+
+All remaining images
+
+These are REFERENCE images.
+
+All reference images show the SAME furniture model photographed from
+different angles.
+
+Your task is ONLY to determine whether the furniture shown in Image #1
+is the SAME physical design as the furniture shown in the reference images.
+
+Compare ONLY visible geometry.
+
+Pay attention to:
+
+- proportions
+- silhouette
+- frame construction
+- armrests
+- legs
+- seat shape
+- backrest shape
+- visible wooden elements
+- upholstery geometry
+- connection points
+- angles
+- overall construction
+
+Ignore:
+
+- upholstery color
+- wood color
+- fabric
+- lighting
+- camera angle
+- background
+- restoration differences
+- wear
+- production year
+
+----------------------------------------
+
+Answer ONLY in this format:
+
+MATCH: YES
+
+or
+
+MATCH: NO
+
+Reason:
+(maximum 3 short sentences explaining the visual comparison)
+
+Do NOT identify the furniture.
+
+Do NOT guess the model.
+
+Do NOT use your own knowledge.
+
+Only compare the images.
 
 """
 
@@ -20,31 +88,31 @@ Knowledge base:
         prompt += f"""
 --------------------------------
 
-Official model:
+MODEL:
 {furniture.model}
 
-Common name:
+COMMON NAME:
 {furniture.common_name}
 
-Designer:
+DESIGNER:
 {furniture.designer}
 
-Manufacturer:
+MANUFACTURER:
 {furniture.manufacturer}
 
-Category:
+CATEGORY:
 {furniture.category}
 
-Visual features:
+VISUAL FEATURES:
 {furniture.visual_features}
 
-Construction:
+CONSTRUCTION:
 {furniture.construction_features}
 
-Often confused with:
+SIMILAR MODELS:
 {furniture.similar_models}
 
-Model family:
+MODEL FAMILY:
 {furniture.model_family}
 
 """
