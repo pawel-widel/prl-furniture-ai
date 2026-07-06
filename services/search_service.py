@@ -1,5 +1,7 @@
 from models.furniture import Furniture
 
+from services.hard_filters import apply_hard_filters
+
 
 FEATURE_TRANSLATIONS = {
 
@@ -156,6 +158,12 @@ def find_candidates(
     for furniture in furniture_list:
 
         score = calculate_score(
+            features,
+            furniture,
+        )
+
+        score = apply_hard_filters(
+            score,
             features,
             furniture,
         )
