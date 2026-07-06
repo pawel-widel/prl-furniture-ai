@@ -35,17 +35,100 @@ if uploaded_file is not None:
 
             result = identify(uploaded_file)
 
+        # ---------------------------------------
+        # Vision
+        # ---------------------------------------
+
         st.subheader("Vision Features")
 
         st.json(result["features"])
 
-        st.subheader("Top Candidates")
+        # ---------------------------------------
+        # Final Result
+        # ---------------------------------------
 
-        for index, candidate in enumerate(result["candidates"], start=1):
+        st.subheader("🏆 Final Identification")
+
+        winner = result["winner"]
+
+        st.write(f"**Model:** {winner.model}")
+
+        if result["verification"]:
+
+            verification = result["verification"]
+
+            st.write(
+                f"**Verification confidence:** "
+                f"{verification['confidence']:.2f}"
+            )
+
+            st.write(
+                f"**Reason:** "
+                f"{verification['reason']}"
+            )
+
+            st.write("### Matched features")
+
+            for feature in verification["matched_features"]:
+
+                st.write(f"✅ {feature}")
+
+            st.write("### Different features")
+
+            for feature in verification["different_features"]:
+
+                st.write(f"❌ {feature}")
+
+        else:
+
+            st.warning(
+                "No candidate passed verification. "
+                "Showing the best Search result."
+            )
+
+        # ---------------------------------------
+        # Search ranking
+        # ---------------------------------------
+
+        st.subheader("Search Ranking")
+
+        for index, candidate in enumerate(
+            result["candidates"],
+            start=1,
+        ):
 
             furniture = candidate["furniture"]
 
             st.write(
-                f"**{index}. {furniture.model}** "
-                f"(score: {candidate['score']})"
+                f"{index}. "
+                f"{furniture.model} "
+                f"(Search score: {candidate['score']})"
+            )
+
+        # ---------------------------------------
+        # Verification Results
+        # ---------------------------------------
+
+        st.subheader("Verification Results")
+
+        for item in result["verification_results"]:
+
+            verification = item["verification"]
+
+            st.write("---")
+
+            st.write(
+                f"**{item['furniture'].model}**"
+            )
+
+            st.write(
+                f"Search score: {item['search_score']}"
+            )
+
+            st.write(
+                f"Match: {verification['match']}"
+            )
+
+            st.write(
+                f"Confidence: {verification['confidence']:.2f}"
             )

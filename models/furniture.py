@@ -6,6 +6,7 @@ class Furniture:
     id: int
     model: str
     common_name: str
+    reference_id: str
     designer: str
     production_years: str
     category: str

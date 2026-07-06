@@ -12,16 +12,18 @@ CREATE TABLE furniture (
 
     model TEXT NOT NULL,
     common_name TEXT,
+    reference_id TEXT,
+
     designer TEXT,
-    year TEXT,
-    type TEXT,
+    production_years TEXT,
+    category TEXT,
     manufacturer TEXT,
 
-    characteristics TEXT,
-    construction TEXT,
+    visual_features TEXT,
+    construction_features TEXT,
 
-    confused_with TEXT,
-    family TEXT,
+    similar_models TEXT,
+    model_family TEXT,
 
     sources TEXT,
 

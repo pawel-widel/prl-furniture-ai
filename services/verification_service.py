@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 
 from dotenv import load_dotenv
@@ -53,15 +54,23 @@ Ignore:
 - restoration
 - production year
 
-Return ONLY this JSON:
+Return ONLY valid JSON.
 
 {
     "match": true,
     "confidence": 0.95,
-    "reason": "One short sentence."
+    "reason": "One short sentence.",
+    "matched_features": [
+        "feature 1",
+        "feature 2"
+    ],
+    "different_features": [
+        "feature 1",
+        "feature 2"
+    ]
 }
 """
-    
+
 
 def verify_candidate(
     uploaded_file,
@@ -85,8 +94,11 @@ def verify_candidate(
     ]
 
     reference_images = get_reference_images(
-        furniture.model
+        furniture.reference_id
     )
+
+    print(f"\nReference ID: {furniture.reference_id}")
+    print(f"Reference images found: {len(reference_images)}")
 
     for image_path in reference_images:
 
@@ -109,4 +121,10 @@ def verify_candidate(
         ],
     )
 
-    return response.output_text
+    print("\n======================================")
+    print(f"Verification: {furniture.model}")
+    print("======================================")
+    print(response.output_text)
+    print("======================================\n")
+
+    return json.loads(response.output_text)
