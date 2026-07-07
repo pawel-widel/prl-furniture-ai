@@ -10,11 +10,24 @@ from services.identification_service import identify
 st.set_page_config(
     page_title="PRL Furniture AI",
     page_icon="🪑",
+    layout="wide",
 )
 
-st.title("PRL Furniture Recognition")
+# ======================================================
+# HEADER
+# ======================================================
 
-st.write("Welcome to my hobby project!")
+st.markdown("# 🪑 PRL Furniture AI")
+
+st.markdown(
+    "### Identify Polish Mid-Century Furniture from a single photo"
+)
+
+st.divider()
+
+# ======================================================
+# UPLOAD
+# ======================================================
 
 uploaded_file = st.file_uploader(
     "Upload a furniture photo",
@@ -23,112 +36,181 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
 
-    st.image(
-        uploaded_file,
-        caption="Uploaded photo",
-        use_container_width=True,
-    )
+    if st.button(
+        "🔍 Identify furniture",
+        type="primary",
+        width="stretch",
+    ):
 
-    if st.button("🔍 Identify furniture"):
-
-        with st.spinner("Analyzing image..."):
+        with st.spinner("Analyzing furniture..."):
 
             result = identify(uploaded_file)
 
-        # ---------------------------------------
-        # Vision
-        # ---------------------------------------
-
-        st.subheader("Vision Features")
-
-        st.json(result["features"])
-
-        # ---------------------------------------
-        # Final Result
-        # ---------------------------------------
-
-        st.subheader("🏆 Final Identification")
-
         winner = result["winner"]
 
-        st.write(f"**Model:** {winner.model}")
+        # ======================================================
+        # MAIN LAYOUT
+        # ======================================================
 
-        if result["verification"]:
+        left_col, center_col, right_col = st.columns(
+            [1, 1.4, 1]
+        )
 
-            verification = result["verification"]
+        # ------------------------------------------------------
+        # USER PHOTO
+        # ------------------------------------------------------
 
-            st.write(
-                f"**Verification confidence:** "
-                f"{verification['confidence']:.2f}"
+        with left_col:
+
+            st.subheader("📷 Your Photo")
+
+            st.image(
+                uploaded_file,
+                use_container_width=True,
             )
 
-            st.write(
-                f"**Reason:** "
-                f"{verification['reason']}"
+        # ------------------------------------------------------
+        # WINNER
+        # ------------------------------------------------------
+
+        with center_col:
+
+            st.subheader("🏆 Best Match")
+
+            st.info(
+                "Reference photo will appear here in the next iteration."
             )
 
-            st.write("### Matched features")
+            st.markdown(f"## {winner.model}")
 
-            for feature in verification["matched_features"]:
+            if result["verification"]:
 
-                st.write(f"✅ {feature}")
+                verification = result["verification"]
 
-            st.write("### Different features")
+                confidence = int(
+                    verification["confidence"] * 100
+                )
 
-            for feature in verification["different_features"]:
+                st.metric(
+                    "Confidence",
+                    f"{confidence}%",
+                )
 
-                st.write(f"❌ {feature}")
+                st.markdown("### Why this match?")
 
-        else:
+                for feature in verification["matched_features"]:
 
-            st.warning(
-                "No candidate passed verification. "
-                "Showing the best Search result."
+                    st.write(f"✅ {feature}")
+
+            else:
+
+                st.warning(
+                    "No candidate passed verification."
+                )
+
+        # ------------------------------------------------------
+        # TOP 3
+        # ------------------------------------------------------
+
+        with right_col:
+
+            st.subheader("📊 Similar Models")
+
+            max_score = max(
+                candidate["score"]
+                for candidate in result["candidates"]
             )
 
-        # ---------------------------------------
-        # Search ranking
-        # ---------------------------------------
+            for candidate in result["candidates"][:3]:
 
-        st.subheader("Search Ranking")
+                furniture = candidate["furniture"]
 
-        for index, candidate in enumerate(
-            result["candidates"],
-            start=1,
+                score = candidate["score"]
+
+                percent = int(
+                    (score / max_score) * 100
+                )
+
+                st.write(f"**{furniture.model}**")
+
+                st.progress(percent / 100)
+
+                st.caption(f"{percent}% similarity")
+
+                st.write("")
+
+        st.divider()
+
+        # ======================================================
+        # TECHNICAL DETAILS
+        # ======================================================
+
+        with st.expander(
+            "⚙️ Technical Details",
+            expanded=False,
         ):
 
-            furniture = candidate["furniture"]
+            st.subheader("Vision Features")
 
-            st.write(
-                f"{index}. "
-                f"{furniture.model} "
-                f"(Search score: {candidate['score']})"
-            )
+            st.json(result["features"])
 
-        # ---------------------------------------
-        # Verification Results
-        # ---------------------------------------
+            st.divider()
 
-        st.subheader("Verification Results")
+            st.subheader("Search Ranking")
 
-        for item in result["verification_results"]:
+            for index, candidate in enumerate(
+                result["candidates"],
+                start=1,
+            ):
 
-            verification = item["verification"]
+                st.write(
+                    f"{index}. "
+                    f"{candidate['furniture'].model} "
+                    f"(Score: {candidate['score']})"
+                )
 
-            st.write("---")
+            st.divider()
 
-            st.write(
-                f"**{item['furniture'].model}**"
-            )
+            st.subheader("Verification Results")
 
-            st.write(
-                f"Search score: {item['search_score']}"
-            )
+            for item in result["verification_results"]:
 
-            st.write(
-                f"Match: {verification['match']}"
-            )
+                verification = item["verification"]
 
-            st.write(
-                f"Confidence: {verification['confidence']:.2f}"
-            )
+                st.markdown("---")
+
+                st.markdown(
+                    f"### {item['furniture'].model}"
+                )
+
+                st.write(
+                    f"Search score: {item['search_score']}"
+                )
+
+                st.write(
+                    f"Match: {verification['match']}"
+                )
+
+                st.write(
+                    f"Confidence: {verification['confidence']:.2f}"
+                )
+
+                st.write(
+                    verification["reason"]
+                )
+
+                if verification["matched_features"]:
+
+                    st.markdown("**Matched features**")
+
+                    for feature in verification["matched_features"]:
+
+                        st.write(f"✅ {feature}")
+
+                if verification["different_features"]:
+
+                    st.markdown("**Different features**")
+
+                    for feature in verification["different_features"]:
+
+                        st.write(f"❌ {feature}")
