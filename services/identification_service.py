@@ -1,3 +1,5 @@
+import json
+
 import database.database as db
 
 from services.search_service import find_candidates
@@ -16,22 +18,64 @@ def identify(uploaded_file):
 
     features = extract_features(uploaded_file)
 
-    # Vision przeczytał plik do końca.
+    print("\n" + "=" * 60)
+    print("VISION FEATURES")
+    print("=" * 60)
+    print(json.dumps(features, indent=2))
+    print("=" * 60 + "\n")
+
     uploaded_file.seek(0)
 
     # ----------------------------------
-    # Stage 2 - Search
+    # Stage 2 - Database
     # ----------------------------------
 
     furniture = db.get_all_furniture()
+
+    print("=" * 60)
+    print("DATABASE")
+    print("=" * 60)
+
+    print(f"Furniture loaded: {len(furniture)}")
+    print(f"Type: {type(furniture)}")
+
+    if furniture:
+        print(f"First object type: {type(furniture[0])}")
+
+    for item in furniture:
+        print(
+            f"{item.model} | "
+            f"reference_id={item.reference_id}"
+        )
+
+    print("=" * 60 + "\n")
+
+    # ----------------------------------
+    # Stage 3 - Search
+    # ----------------------------------
 
     candidates = find_candidates(
         features,
         furniture,
     )
 
+    print("=" * 60)
+    print("SEARCH RESULTS")
+    print("=" * 60)
+
+    print(f"Candidates found: {len(candidates)}")
+
+    for candidate in candidates:
+
+        print(
+            f"{candidate['furniture'].model:<25}"
+            f" Score: {candidate['score']}"
+        )
+
+    print("=" * 60 + "\n")
+
     # ----------------------------------
-    # Stage 3 - Verification
+    # Stage 4 - Verification
     # ----------------------------------
 
     verification_results = []
@@ -40,7 +84,6 @@ def identify(uploaded_file):
 
         furniture = candidate["furniture"]
 
-        # Pomijamy modele bez zdjęć referencyjnych
         if not furniture.reference_id:
             continue
 

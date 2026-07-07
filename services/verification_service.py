@@ -97,8 +97,22 @@ def verify_candidate(
         furniture.reference_id
     )
 
-    print(f"\nReference ID: {furniture.reference_id}")
-    print(f"Reference images found: {len(reference_images)}")
+    # -------------------------
+    # DEBUG
+    # -------------------------
+
+    print("\n" + "=" * 60)
+    print(f"Verification candidate : {furniture.model}")
+    print(f"Reference ID           : {furniture.reference_id}")
+    print(f"Reference images found : {len(reference_images)}")
+    print("-" * 60)
+
+    for image_path in reference_images:
+        print(image_path)
+
+    print("=" * 60)
+
+    # -------------------------
 
     for image_path in reference_images:
 
