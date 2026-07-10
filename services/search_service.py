@@ -6,61 +6,155 @@ from services.hard_filters import apply_hard_filters
 FEATURE_KEYWORDS = {
 
     "construction": {
+
         "open_frame": [
+            "open wooden side frame",
+            "open wooden frame",
             "open frame",
+            "open structural frame",
+            "open frame construction",
+            "open space under seat",
             "exposed wooden structure",
         ],
-        "rounded_shell": [
-            "rounded shell",
-            "shell construction",
-            "bucket shell",
+
+        "closed_frame": [
+            "closed lower frame",
+            "closed upholstered body",
+            "closed upholstered back",
+            "one piece body",
+            "one_piece_body",
+        ],
+
+        "bentwood": [
+            "bentwood frame construction",
+            "bentwood",
+        ],
+
+        "tubular": [
+            "metal frame",
+            "steel frame",
+            "tubular legs",
+            "tubular frame",
+        ],
+
+        "solid": [
+            "solid wooden frame",
+            "solid construction",
+            "solid upholstered plinth",
+        ],
+
+        "modular": [
+            "modular construction",
         ],
     },
 
     "armrest_shape": {
+
         "flat_plank": [
             "flat plank armrests",
+            "flat wooden armrests",
+            "flat armrests",
             "wide wooden armrests",
+            "rectangular wooden armrests",
+            "paddle-shaped armrests",
         ],
+
         "round_dowel": [
             "rounded wooden armrests",
+            "round profile wooden rails",
             "round dowel armrests",
         ],
+
+        "curved_wood": [
+            "curved wooden armrests",
+            "curved armrests",
+            "sloping armrests",
+        ],
+
         "integrated_shell": [
+            "integrated shell",
             "integrated armrests",
+            "continuous armrests",
+            "continuous_armrests",
+            "wrapped armrests",
+            "wrapped_armrests",
         ],
     },
 
     "backrest_shape": {
+
         "rounded_rectangle": [
             "rounded rectangular backrest",
+            "rounded backrest corners",
         ],
+
         "rectangular": [
             "rectangular backrest",
+            "tall rectangular backrest",
         ],
+
         "bucket": [
-            "bucket backrest",
+            "bucket seat",
+            "bucket_seat",
             "rounded shell",
+            "wide rounded backrest",
+            "wide_rounded_backrest",
+            "rounded top backrest",
+            "rounded_top_backrest",
+        ],
+
+        "winged": [
+            "wing shaped backrest",
+            "flared upper collar",
+        ],
+
+        "trapezoid": [
+            "trapezoidal backrest",
+            "tapered rectangular backrest",
         ],
     },
 
     "frame_geometry": {
+
         "a_frame": [
             "a-frame side construction",
-            "triangular side frame",
+            "inverted v-frame side construction",
         ],
+
         "rectangular_frame": [
             "rectangular side frame",
+            "straight side rails",
         ],
+
+        "triangular_frame": [
+            "triangular side frame",
+            "triangular side geometry",
+        ],
+
         "shell": [
-            "shell construction",
+            "rounded shell",
+            "rounded_shell",
+            "integrated shell",
+            "integrated_shell",
+            "floating shell",
+            "floating_shell",
+            "upholstered shell",
+            "upholstered_shell",
+            "organic shell silhouette",
+        ],
+
+        "cantilever": [
+            "cantilever frame",
         ],
     },
 
     "front_support": {
+
         "angled": [
             "angled front support",
+            "angled support",
         ],
+
         "vertical": [
             "vertical front support",
         ],
@@ -79,21 +173,65 @@ FEATURE_KEYWORDS = {
 
         "tapered_legs": [
             "tapered wooden legs",
+            "straight tapered legs",
+            "tapered legs",
         ],
 
         "splayed_legs": [
             "splayed legs",
+            "splayed tapered legs",
+            "slightly splayed legs",
+            "slightly_splayed_legs",
         ],
 
         "open_frame": [
+            "open wooden side frame",
+            "open wooden frame",
             "open frame",
             "open space under seat",
-            "exposed wooden structure",
         ],
 
         "rounded_edges": [
-            "organic armrest shape",
             "rounded edges",
+            "rounded backrest corners",
+            "organic shape",
+            "organic_shape",
+        ],
+
+        "flat_armrests": [
+            "flat plank armrests",
+            "flat wooden armrests",
+        ],
+
+        "curved_armrests": [
+            "curved armrests",
+            "wrapped armrests",
+            "wrapped_armrests",
+        ],
+
+        "wide_backrest": [
+            "wide backrest",
+            "wide rounded backrest",
+            "wide_rounded_backrest",
+            "high rounded backrest",
+        ],
+
+        "side_stretcher": [
+            "side stretcher",
+            "lower side stretcher",
+        ],
+
+        "visible_bolts": [
+            "visible side bolts",
+            "visible screw joints",
+            "visible side screws",
+            "visible rear bolts",
+        ],
+
+        "floating_seat": [
+            "floating seat",
+            "floating seat appearance",
+            "floating upholstered seat",
         ],
     },
 }
@@ -155,7 +293,9 @@ def calculate_score(
             [
                 "wooden frame",
                 "wooden structure",
+                "solid wooden frame",
                 "exposed wooden structure",
+                "visible wooden side rails",
             ],
         ):
             score += 5
@@ -168,6 +308,8 @@ def calculate_score(
                 "metal frame",
                 "steel frame",
                 "steel structure",
+                "tubular frame",
+                "metal legs",
             ],
         ):
             score += 5
@@ -176,21 +318,49 @@ def calculate_score(
     # SEAT
     # --------------------------------------------------
 
-    if (
-        features.get("seat_type") == "upholstered"
-        and "upholstered" in text
-    ):
-        score += 2
+    seat_type = features.get("seat_type")
+
+    if seat_type == "upholstered":
+
+        if "upholstered" in text:
+            score += 2
+
+    elif seat_type == "plastic":
+
+        if contains_any(
+            text,
+            [
+                "plastic",
+                "shell",
+                "composite",
+                "molded",
+            ],
+        ):
+            score += 6
 
     # --------------------------------------------------
     # BACKREST
     # --------------------------------------------------
 
-    if (
-        features.get("backrest_type") == "upholstered"
-        and "backrest" in text
-    ):
-        score += 2
+    backrest_type = features.get("backrest_type")
+
+    if backrest_type == "upholstered":
+
+        if "backrest" in text:
+            score += 2
+
+    elif backrest_type == "plastic":
+
+        if contains_any(
+            text,
+            [
+                "plastic",
+                "shell",
+                "composite",
+                "molded",
+            ],
+        ):
+            score += 6
 
     # --------------------------------------------------
     # CONSTRUCTION
@@ -204,7 +374,11 @@ def calculate_score(
             text,
             FEATURE_KEYWORDS["construction"][construction],
         ):
-            score += 6
+
+            if construction == "closed_frame":
+                score += 8
+            else:
+                score += 6
 
     # --------------------------------------------------
     # ARMREST SHAPE
@@ -218,7 +392,11 @@ def calculate_score(
             text,
             FEATURE_KEYWORDS["armrest_shape"][armrest],
         ):
-            score += 6
+
+            if armrest == "integrated_shell":
+                score += 10
+            else:
+                score += 6
 
     # --------------------------------------------------
     # BACKREST SHAPE
@@ -232,7 +410,11 @@ def calculate_score(
             text,
             FEATURE_KEYWORDS["backrest_shape"][backrest],
         ):
-            score += 5
+
+            if backrest == "bucket":
+                score += 9
+            else:
+                score += 5
 
     # --------------------------------------------------
     # FRAME GEOMETRY
@@ -246,7 +428,11 @@ def calculate_score(
             text,
             FEATURE_KEYWORDS["frame_geometry"][geometry],
         ):
-            score += 7
+
+            if geometry == "shell":
+                score += 12
+            else:
+                score += 7
 
     # --------------------------------------------------
     # FRONT SUPPORT
@@ -272,7 +458,10 @@ def calculate_score(
             text,
             [
                 "floating seat",
+                "floating seat appearance",
                 "open space under seat",
+                "lower stretcher",
+                "side stretcher",
             ],
         ):
             score += 5
@@ -281,20 +470,33 @@ def calculate_score(
     # ADDITIONAL FEATURES
     # --------------------------------------------------
 
-    extra = features.get("additional_features", "")
+    extra = features.get(
+        "additional_features",
+        "",
+    )
 
-    if isinstance(extra, str):
+    if isinstance(
+        extra,
+        str,
+    ):
 
         for tag in extra.split(","):
 
             tag = tag.strip()
 
-            if tag not in FEATURE_KEYWORDS["additional_features"]:
+            if (
+                tag
+                not in FEATURE_KEYWORDS[
+                    "additional_features"
+                ]
+            ):
                 continue
 
             if contains_any(
                 text,
-                FEATURE_KEYWORDS["additional_features"][tag],
+                FEATURE_KEYWORDS[
+                    "additional_features"
+                ][tag],
             ):
                 score += 4
 

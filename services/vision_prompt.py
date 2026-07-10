@@ -125,6 +125,34 @@ CONSTRUCTION
 - modular
 - other
 
+Construction describes the dominant visible structural form.
+
+Classify construction whenever it can be determined from the visible shape.
+
+Do NOT infer hidden internal construction.
+
+Use:
+
+open_frame
+Visible open structural frame with exposed supporting elements.
+
+closed_frame
+Continuous enclosed body or shell with no open side frame.
+
+bentwood
+Frame primarily formed from bent wooden elements.
+
+tubular
+Frame primarily constructed from tubular metal.
+
+solid
+Compact solid body without visible open frame.
+
+modular
+Clearly assembled from multiple structural modules.
+
+Use "other" ONLY if the construction genuinely cannot be determined from the visible furniture.
+
 ARMREST_SHAPE
 
 - flat_plank
@@ -133,6 +161,23 @@ ARMREST_SHAPE
 - integrated_shell
 - none
 - other
+
+flat_plank
+Wide flat wooden armrests.
+
+round_dowel
+Round dowel armrests.
+
+curved_wood
+Curved wooden armrests.
+
+integrated_shell
+Armrests are part of the same continuous shell as the seat and backrest.
+
+none
+No armrests.
+
+Use "other" only when the armrest shape cannot be determined.
 
 BACKREST_SHAPE
 
@@ -143,6 +188,23 @@ BACKREST_SHAPE
 - trapezoid
 - other
 
+rectangular
+Straight rectangular outline.
+
+rounded_rectangle
+Rectangular outline with rounded corners.
+
+bucket
+Continuous shell wrapping around the user.
+
+winged
+Side wings clearly extend forward.
+
+trapezoid
+Backrest visibly narrows toward the top.
+
+Use "other" only when the shape cannot be determined.
+
 FRAME_GEOMETRY
 
 - a_frame
@@ -152,12 +214,53 @@ FRAME_GEOMETRY
 - cantilever
 - other
 
+Frame geometry describes the dominant visible side geometry.
+
+Prefer side views.
+
+If enough of the frame is visible to confidently determine its geometry, classify it.
+
+Use:
+
+a_frame
+A-shaped side construction.
+
+rectangular_frame
+Rectangular side frame.
+
+triangular_frame
+Triangular side frame.
+
+shell
+Seat and backrest form one continuous molded shell.
+
+cantilever
+Continuous cantilever frame without rear legs.
+
+Use "other" ONLY when the geometry cannot be determined from the visible furniture.
+
 FRONT_SUPPORT
+
 
 - vertical
 - angled
 - none
 - other
+
+Describe the visible orientation of the front support.
+
+If enough of the support is visible to determine its orientation, classify it.
+
+vertical
+Support is approximately vertical.
+
+angled
+Support is visibly inclined.
+
+none
+No dedicated front support exists.
+
+Use "other" ONLY when the support cannot be evaluated.
 
 --------------------------------------------------
 SPECIAL RULES
@@ -165,49 +268,41 @@ SPECIAL RULES
 
 Construction
 
-Only classify construction if it is clearly visible.
+Classify the dominant visible construction whenever possible.
 
-Otherwise:
+Do not infer hidden internal structure.
 
-other
+Use "other" only when the visible construction genuinely cannot be determined.
 
 Frame geometry
 
-Frame geometry may ONLY be classified if the complete side frame is visible.
+Prefer side views.
 
-Never infer frame geometry from a front view.
+If sufficient parts of the frame are visible to recognize its geometry, classify it.
 
-Never infer frame geometry from a partially hidden side.
-
-Otherwise:
-
-other
+Use "other" only when the geometry cannot be determined.
 
 Front support
 
-Only classify the support if the entire support is visible.
+If the visible support clearly indicates its orientation, classify it.
 
-Otherwise:
-
-other
+Otherwise return "other".
 
 Armrest shape
 
-Describe ONLY the upper armrest itself.
+Describe only the visible upper armrest.
 
-Ignore supporting elements.
-
-Do not infer hidden geometry.
+Ignore hidden supporting elements.
 
 Lower stretcher
 
-Return true ONLY if a horizontal stretcher or structural rail is clearly visible.
+Return true only when a horizontal structural stretcher is clearly visible.
 
 Otherwise return false.
 
 Wooden frame
 
-Return true ONLY if the load-bearing frame is visibly wooden.
+Return true only when the visible load-bearing frame is wooden.
 
 Do not infer hidden wooden construction.
 
@@ -274,9 +369,12 @@ visible_bolts
 
 floating_seat
 
-If none apply:
 
-return an empty string.
+Extract every applicable feature from the allowed list.
+
+Most furniture models should contain multiple additional features.
+
+Return an empty string only if none of the allowed features are clearly visible
 
 --------------------------------------------------
 CONFIDENCE
