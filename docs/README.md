@@ -150,12 +150,19 @@ Project documentation is available in the `/docs` directory.
 
 ## Screenshots
 
-*(Add application screenshots here)*
 
 - Main screen
+ <img width="892" height="458" alt="Main_search" src="https://github.com/user-attachments/assets/4d4a9ded-f265-4560-bad3-4f9f520b3217" />
+ 
 - Identification results
-- AI Verification
-- Technical details
+ <img width="894" height="794" alt="search_result" src="https://github.com/user-attachments/assets/c76ff95d-5831-4e50-9e9e-492d47771a70" />
+ 
+- Pipeline and AI Verification:
+  
+ <img width="839" height="661" alt="pipeline_and_features" src="https://github.com/user-attachments/assets/816fbe86-be4f-4abf-a541-0bff66ee5462" />
+  
+ <img width="1048" height="822" alt="image" src="https://github.com/user-attachments/assets/0852c521-692e-45e4-be72-f540c7aedb29" />
+
 
 ---
 
